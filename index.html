@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Статус Minecraft сервера</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #121212; color: #eee; padding: 20px; }
+    #status { margin-top: 20px; }
+    .online { color: #0f0; }
+    .offline { color: #f00; }
+  </style>
+</head>
+<body>
+  <h1>Проверка статуса сервера Minecraft</h1>
+  <input type="text" id="serverIp" placeholder="Введите IP сервера" />
+  <button onclick="checkStatus()">Проверить</button>
+  
+  <div id="status"></div>
+
+  <script>
+    async function checkStatus() {
+      const ip = document.getElementById('serverIp').value.trim();
+      const statusDiv = document.getElementById('status');
+      if (!ip) {
+        statusDiv.textContent = 'Введите IP сервера!';
+        return;
+      }
+      statusDiv.textContent = 'Загрузка...';
+
+      try {
+        const response = await fetch(https://api.mcstatus.io/v2/status/java/${ip});
+        if (!response.ok) throw new Error('Ошибка сети');
+        const data = await response.json();
+
+        if (data.online) {
+          statusDiv.innerHTML = <p class="online">Сервер онлайн</p>
+            <p>Игроков: ${data.players.online} / ${data.players.max}</p>
+            <p>Версия: ${data.version.name}</p>;
+        } else {
+          statusDiv.innerHTML = '<p class="offline">Сервер оффлайн</p>';
+        }
+      } catch (e) {
+        statusDiv.textContent = 'Не удалось получить данные. Проверь IP или попробуй позже.';
+      }
+    }
+  </script>
+</body>
+</html>
